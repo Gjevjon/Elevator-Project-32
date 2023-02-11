@@ -73,6 +73,18 @@ func requests_chooseDirection(e Elevator) DirnBehaviourPair {
 	}
 }
 
+func requests_shouldStop(e Elevator) bool {
+	switch e.dirn {
+	case D_Down:
+		return e.requests[e.floor][B_HallDown] || e.requests[e.floor][B_Cab] || !requests_below(e)
+	case D_Up:
+		return e.requests[e.floor][B_HallUp] || e.requests[e.floor][B_Cab] || !requests_above(e)
+	case D_Stop:
+	default:
+		return true
+	}
+}
+
 func requests_shouldClearImmediately(e Elevator, btn_floor int, btn_type ButtonType) bool {
 	switch e.config.clearRequestVariant {
 	case CV_All:

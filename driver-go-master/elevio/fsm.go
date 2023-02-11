@@ -49,4 +49,53 @@ func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 
 }
 
-//My comment
+func fsmOnFloorArrival(newFloor int) {
+	fmt.Println("\n\n", "fsmOnFloorArrival", "(", newFloor, ")")
+	elevator_print(elevator)
+
+	elevator.floor = newFloor
+
+	SetFloorIndicator(elevator.floor)
+	switch elevator.behaviour {
+	case EB_Moving:
+		if requests_shouldStop(elevator) {
+			SetMotorDirection(D_Stop)
+			SetDoorOpenLamp(true)
+			elevator = requests_clearAtCurrentFloor(elevator)
+			timer_start(elevator.config.doorOpenDuration_s)
+			setAllLights(elevator)
+			elevator.behaviour = EB_DoorOpen
+		}
+	default:
+	}
+
+	fmt.Println("\nNew state:")
+	elevator_print(elevator)
+}
+
+func fsm_onDoorTimeout() {
+	fmt.Printf("\n\n fsm_onDoorTimeout()\n")
+	elevator_print(elevator)
+
+	switch elevator.behaviour {
+	case EB_DoorOpen:
+		var pair DirnBehaviourPair = requests_chooseDirection(elevator)
+		elevator.dirn = pair.dirn
+		elevator.behaviour = pair.behaviour
+
+		switch elevator.behaviour {
+		case EB_DoorOpen:
+			timer_start(elevator.config.doorOpenDuration_s)
+			elevator = requests_clearAtCurrentFloor(elevator)
+			setAllLights(elevator)
+		case EB_Moving:
+		case EB_Idle:
+			SetDoorOpenLamp(false)
+			SetMotorDirection(elevator.dirn)
+		}
+	default:
+	}
+
+	fmt.Printf("\nNew state:\n")
+	elevator_print(elevator)
+}
