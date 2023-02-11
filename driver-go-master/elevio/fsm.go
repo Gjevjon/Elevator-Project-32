@@ -43,7 +43,7 @@ func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 		case EB_Idle:
 		}
 	}
-
+	setAllLights(elevator)
 	fmt.Printf("\nNew state:\n")
 	elevator_print(elevator)
 
