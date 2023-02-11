@@ -3,33 +3,8 @@ package main
 import (
 	"Driver-go/elevio"
 	"fmt"
+	"time"
 )
-
-func order_handler(order elevio.ButtonEvent, old_cab_orders [4]bool, old_up_orders [4]bool, old_down_orders [4]bool) (cab_orders [4]bool, up_orders [4]bool, down_orders [4]bool) {
-
-	// Just have list arrays equal to the number of floors
-	// Are there any ups greater than.
-	// up: 1 0 0 0
-	// Are there any smaller than.
-	// down: 1 0 0 0
-	// cab: 1 1 1 1
-
-	cab_orders = old_cab_orders
-	up_orders = old_up_orders
-	down_orders = old_down_orders
-
-	// Missing capacity
-	if order.Button == 1 {
-		down_orders[order.Floor] = true
-	} else if order.Button == 2 {
-		up_orders[order.Floor] = true
-	} else {
-		cab_orders[order.Floor] = true
-	}
-
-	// Send this data to the floor handler
-	return
-}
 
 func main() {
 	numFloors := 4
@@ -112,5 +87,7 @@ func main() {
 				elevio.Fsm_onDoorTimeout()
 			}
 		}
+		// Need to save some resources
+		time.Sleep(1)
 	}
 }
