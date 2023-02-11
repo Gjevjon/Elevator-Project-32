@@ -49,7 +49,7 @@ func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 
 }
 
-func fsmOnFloorArrival(newFloor int) {
+func FsmOnFloorArrival(newFloor int) {
 	fmt.Println("\n\n", "fsmOnFloorArrival", "(", newFloor, ")")
 	elevator_print(elevator)
 
@@ -73,7 +73,7 @@ func fsmOnFloorArrival(newFloor int) {
 	elevator_print(elevator)
 }
 
-func fsm_onDoorTimeout() {
+func Fsm_onDoorTimeout() {
 	fmt.Printf("\n\n fsm_onDoorTimeout()\n")
 	elevator_print(elevator)
 

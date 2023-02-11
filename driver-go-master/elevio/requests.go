@@ -80,9 +80,11 @@ func requests_shouldStop(e Elevator) bool {
 	case D_Up:
 		return e.requests[e.floor][B_HallUp] || e.requests[e.floor][B_Cab] || !requests_above(e)
 	case D_Stop:
+		return true
 	default:
 		return true
 	}
+
 }
 
 func requests_shouldClearImmediately(e Elevator, btn_floor int, btn_type ButtonType) bool {

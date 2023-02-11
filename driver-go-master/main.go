@@ -7,15 +7,12 @@ import (
 )
 
 func main() {
-	numFloors := 4
+	numFloors := 3
 	// Here we initiate the simulator!
 	elevio.Init("localhost:15657", numFloors)
 	fmt.Printf("Started!\n")
 	// The default direction. Should this be a global variable???
 	var d elevio.Dirn = elevio.D_Up
-
-	// Function to control the elevator. Seems like we start driving straight up-
-	elevio.SetMotorDirection(d)
 
 	// Different channels
 	// Drive buttons.
@@ -38,34 +35,16 @@ func main() {
 	go elevio.PollStopButton(drv_stop)
 	go elevio.Timer_TimedOut(drv_timer)
 
+	//if(input.floorSensor() == -1){
+	//    fsm_onInitBetweenFloors();
+	//}
+
 	for {
 		select {
 		case a := <-drv_buttons:
 			elevio.Fsm_onRequestButtonPress(a.Floor, a.Button)
 		case a := <-drv_floors:
-
-			//fmt.Printf("%+v\n", a)
-			// What to happen if we stop/ Run out of orders.
-			// This is the last things we check?
-			if a == numFloors-1 {
-				d = elevio.D_Down
-			} else if a == 0 {
-				d = elevio.D_Up
-			}
-
-			elevio.SetMotorDirection(d)
-
-			// Controller
-			// If we are on a floor with a request
-			// Stop motors
-			// Set door open lamp true
-			// Set bools of that floor to 0, only the ones in the same direction as the elevator is moving and cab.
-			// Set door open lamp false
-			// Check if there are more requests in same direction.
-			// Check greater thans
-			// The same goes for the last floor.
-			// If empty stop.
-			//
+			elevio.FsmOnFloorArrival(a)
 		case a := <-drv_obstr:
 			fmt.Printf("%+v\n", a)
 			if a {
@@ -82,12 +61,14 @@ func main() {
 				}
 			}
 		case a := <-drv_timer:
+			fmt.Println(a)
 			if a {
 				elevio.Timer_Stop()
 				elevio.Fsm_onDoorTimeout()
+				fmt.Println("THIS")
 			}
 		}
-		// Need to save some resources
 		time.Sleep(1)
+
 	}
 }
