@@ -52,12 +52,16 @@ func main() {
 	// Stop requests?
 	drv_stop := make(chan bool)
 
+	drv_timer := make(chan bool)
+
 	// We have 4 go routes running.
 
+	// How to implement a timer?
 	go elevio.PollButtons(drv_buttons)
 	go elevio.PollFloorSensor(drv_floors)
 	go elevio.PollObstructionSwitch(drv_obstr)
 	go elevio.PollStopButton(drv_stop)
+	go elevio.Timer_TimedOut(drv_timer)
 
 	for {
 		select {
@@ -101,6 +105,11 @@ func main() {
 				for b := elevio.ButtonType(0); b < 3; b++ {
 					elevio.SetButtonLamp(b, f, false)
 				}
+			}
+		case a := <-drv_timer:
+			if a {
+				elevio.Timer_Stop()
+				elevio.Fsm_onDoorTimeout()
 			}
 		}
 	}

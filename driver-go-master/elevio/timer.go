@@ -14,11 +14,11 @@ func timer_start(duration int64) {
 	timerActive = true
 }
 
-func timer_stop() {
+func Timer_Stop() {
 	timerActive = false
 }
 
-func timer_timedOut() bool {
-	var timedOut bool = (timerActive && get_wall_time() > timerEndTime)
-	return timedOut
+// Should have its own timer channel. We write to the channel only when timed out. :)
+func Timer_TimedOut(receiver chan<- bool) {
+	receiver <- (timerActive && get_wall_time() > timerEndTime)
 }

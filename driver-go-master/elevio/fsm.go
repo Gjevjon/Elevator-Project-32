@@ -49,7 +49,7 @@ func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 
 }
 
-func fsm_onDoorTimeout() {
+func Fsm_onDoorTimeout() {
 	fmt.Printf("\n\n fsm_onDoorTimeout()\n")
 	elevator_print(elevator)
 
