@@ -49,7 +49,31 @@ func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 
 }
 
-func Fsm_onDoorTimeout() {
+func fsmOnFloorArrival(newFloor int) {
+	fmt.Println("\n\n", "fsmOnFloorArrival", "(", newFloor, ")")
+	elevator_print(elevator)
+
+	elevator.floor = newFloor
+
+	SetFloorIndicator(elevator.floor)
+	switch elevator.behaviour {
+	case EB_Moving:
+		if requests_shouldStop(elevator) {
+			SetMotorDirection(D_Stop)
+			SetDoorOpenLamp(true)
+			elevator = requests_clearAtCurrentFloor(elevator)
+			timer_start(elevator.config.doorOpenDuration_s)
+			setAllLights(elevator)
+			elevator.behaviour = EB_DoorOpen
+		}
+	default:
+	}
+
+	fmt.Println("\nNew state:")
+	elevator_print(elevator)
+}
+
+func fsm_onDoorTimeout() {
 	fmt.Printf("\n\n fsm_onDoorTimeout()\n")
 	elevator_print(elevator)
 
