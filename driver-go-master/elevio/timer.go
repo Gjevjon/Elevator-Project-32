@@ -34,9 +34,14 @@ import (
 var timerEndTime time.Time
 var timerActive bool
 
-func Timer_start(duration float64) {
-	timerEndTime = time.Now().Add(3 * time.Second)
+func StartSimpleTimer(simple_timer *time.Timer) {
+	<-simple_timer.C
+}
+
+func Timer_start(duration int) {
+	timerEndTime = time.Now().Add(time.Duration(duration) * time.Second)
 	fmt.Println("timerEndTime is:", timerEndTime)
+
 	timerActive = true
 }
 

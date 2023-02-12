@@ -1,6 +1,8 @@
 package elevio
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type ElevatorBehaviour int
 
@@ -27,7 +29,7 @@ type Elevator struct {
 
 type Config struct {
 	clearRequestVariant ClearRequestVariant
-	doorOpenDuration_s  float64
+	doorOpenDuration_s  int
 }
 
 // Should be moved to elevio
@@ -93,5 +95,5 @@ func elevator_print(es Elevator) {
 }
 
 func Elevator_uninitialized() Elevator {
-	return Elevator{floor: -1, dirn: D_Stop, behaviour: EB_Idle, config: Config{clearRequestVariant: CV_All, doorOpenDuration_s: 3.0}}
+	return Elevator{floor: -1, dirn: D_Stop, behaviour: EB_Idle, config: Config{clearRequestVariant: CV_All, doorOpenDuration_s: 3}}
 }
