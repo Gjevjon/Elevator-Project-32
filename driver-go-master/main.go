@@ -3,7 +3,6 @@ package main
 import (
 	"Driver-go/elevio"
 	"fmt"
-	"time"
 )
 
 func main() {
@@ -26,7 +25,9 @@ func main() {
 
 	drv_timer := make(chan bool)
 
-	// We have 4 go routes running.
+	if elevio.GetFloor() == -1 {
+		elevio.Fsm_onInitBetweenFloors()
+	}
 
 	// How to implement a timer?
 	go elevio.PollButtons(drv_buttons)
@@ -61,14 +62,13 @@ func main() {
 				}
 			}
 		case a := <-drv_timer:
-			fmt.Println(a)
+			fmt.Println("This is a bool:", a)
 			if a {
 				elevio.Timer_Stop()
 				elevio.Fsm_onDoorTimeout()
 				fmt.Println("THIS")
 			}
 		}
-		time.Sleep(1)
 
 	}
 }

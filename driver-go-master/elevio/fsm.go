@@ -15,6 +15,12 @@ func setAllLights(es Elevator) {
 	}
 }
 
+func Fsm_onInitBetweenFloors() {
+	SetMotorDirection(D_Down)
+	elevator.dirn = D_Down
+	elevator.behaviour = EB_Moving
+}
+
 func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 	fmt.Printf("\n\n%s(%d, %s)\n", "fsm_onRequestButtonPress", btn_floor, elevio_button_toString(btn_type))
 	elevator_print(elevator)
@@ -46,6 +52,7 @@ func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 	setAllLights(elevator)
 	fmt.Printf("\nNew state:\n")
 	elevator_print(elevator)
+	fmt.Println("\nTimer", elevator.config.doorOpenDuration_s)
 
 }
 
@@ -71,6 +78,7 @@ func FsmOnFloorArrival(newFloor int) {
 
 	fmt.Println("\nNew state:")
 	elevator_print(elevator)
+	fmt.Println("\nTimer", elevator.config.doorOpenDuration_s)
 }
 
 func Fsm_onDoorTimeout() {
