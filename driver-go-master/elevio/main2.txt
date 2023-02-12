@@ -1,0 +1,118 @@
+//package main
+
+import (
+	"Driver-go/elevio"
+	"fmt"
+	"time"
+)
+
+func main() {
+	const _pollRate = 20 * time.Millisecond
+
+	var _numFloors int = 4
+
+	const N_FLOORS int = 4
+	const N_BUTTONS int = 3
+	// Here we initiate the simulator!
+	elevio.Init("localhost:15657", _numFloors)
+	fmt.Printf("Started!\n")
+	// The default direction. Should this be a global variable???
+	//var d elevio.Dirn = elevio.D_Up
+
+	// Different channels
+	// Drive buttons.
+	/*
+		drv_buttons := make(chan elevio.ButtonEvent)
+		// Drive floors. Does this take the drive to request?
+		drv_floors := make(chan int)
+		// Is this the obstruction handler? What exactly does the obstruction do?
+		drv_obstr := make(chan bool)
+		// Stop requests?
+		drv_stop := make(chan bool)
+
+		drv_timer := make(chan bool)
+
+		// We have 4 go routes running.
+
+		// How to implement a timer?
+		go elevio.PollButtons(drv_buttons)
+		go elevio.PollFloorSensor(drv_floors)
+		//go elevio.PollObstructionSwitch(drv_obstr)
+		//go elevio.PollStopButton(drv_stop)
+		//go elevio.Timer_TimedOut(drv_timer)
+
+		//if(input.floorSensor() == -1){
+		//    fsm_onInitBetweenFloors();
+		//}
+
+		for {
+			select {
+			case a := <-drv_buttons:
+				elevio.Fsm_onRequestButtonPress(a.Floor, a.Button)
+			case a := <-drv_floors:
+				elevio.FsmOnFloorArrival(a)
+				elevio.Fsm_onDoorTimeout()
+			case a := <-drv_obstr:
+				fmt.Printf("%+v\n", a)
+				if a {
+					elevio.SetMotorDirection(elevio.D_Stop)
+				} else {
+					elevio.SetMotorDirection(d)
+				}
+
+			case a := <-drv_stop:
+				fmt.Printf("%+v\n", a)
+				for f := 0; f < numFloors; f++ {
+					for b := elevio.ButtonType(0); b < 3; b++ {
+						elevio.SetButtonLamp(b, f, false)
+					}
+				}
+			case a := <-drv_timer:
+				fmt.Println(a)
+				if a {
+					elevio.Timer_Stop()
+					elevio.Fsm_onDoorTimeout()
+					fmt.Println("THIS")
+				}
+			}
+			time.Sleep(1)
+
+		}*/
+
+	inputPollRateMs := 25
+	/*
+		if elevio.GetFloor() == -1 {
+			//fsm_onInitBetweenFloors()
+		}*/
+
+	prev := [N_FLOORS][N_BUTTONS]bool{}
+	prevFloor := -1
+
+	for {
+		// Request button
+		for f := 0; f < N_FLOORS; f++ {
+			for b := 0; b < N_BUTTONS; b++ {
+				v := elevio.GetButton(elevio.ButtonType(b), f)
+				if v != false && v != prev[f][b] {
+					elevio.Fsm_onRequestButtonPress(f, elevio.ButtonType(b))
+				}
+				prev[f][b] = v
+			}
+		}
+		// Floor sensor
+		f := elevio.GetFloor()
+		if f != -1 && f != prevFloor {
+			elevio.Fsm_OnFloorArrival(f)
+		}
+		prevFloor = f
+
+		if elevio.Timer_timedOut() {
+			elevio.Timer_stop()
+			elevio.Fsm_onDoorTimeout()
+		}
+
+		// Timer
+
+		time.Sleep(time.Duration(inputPollRateMs) * time.Millisecond)
+	}
+}

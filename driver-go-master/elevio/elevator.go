@@ -5,16 +5,16 @@ import "fmt"
 type ElevatorBehaviour int
 
 const (
-	EB_Idle ElevatorBehaviour = iota
-	EB_DoorOpen
-	EB_Moving
+	EB_Idle     ElevatorBehaviour = 0
+	EB_DoorOpen ElevatorBehaviour = 1
+	EB_Moving   ElevatorBehaviour = 2
 )
 
 type ClearRequestVariant int
 
 const (
-	CV_All ClearRequestVariant = iota
-	CV_InDirn
+	CV_All    ClearRequestVariant = 0
+	CV_InDirn ClearRequestVariant = 1
 )
 
 type Elevator struct {
@@ -27,7 +27,7 @@ type Elevator struct {
 
 type Config struct {
 	clearRequestVariant ClearRequestVariant
-	doorOpenDuration_s  int64
+	doorOpenDuration_s  float64
 }
 
 // Should be moved to elevio
@@ -93,5 +93,5 @@ func elevator_print(es Elevator) {
 }
 
 func Elevator_uninitialized() Elevator {
-	return Elevator{floor: -1, dirn: D_Stop, behaviour: EB_Idle, config: Config{clearRequestVariant: CV_All, doorOpenDuration_s: 3}}
+	return Elevator{floor: -1, dirn: D_Stop, behaviour: EB_Idle, config: Config{clearRequestVariant: CV_All, doorOpenDuration_s: 3.0}}
 }

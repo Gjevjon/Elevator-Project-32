@@ -3,11 +3,10 @@ package main
 import (
 	"Driver-go/elevio"
 	"fmt"
-	"time"
 )
 
 func main() {
-	numFloors := 3
+	numFloors := 4
 	// Here we initiate the simulator!
 	elevio.Init("localhost:15657", numFloors)
 	fmt.Printf("Started!\n")
@@ -26,14 +25,16 @@ func main() {
 
 	drv_timer := make(chan bool)
 
-	// We have 4 go routes running.
+	if elevio.GetFloor() == -1 {
+		elevio.Fsm_onInitBetweenFloors()
+	}
 
 	// How to implement a timer?
 	go elevio.PollButtons(drv_buttons)
 	go elevio.PollFloorSensor(drv_floors)
 	go elevio.PollObstructionSwitch(drv_obstr)
 	go elevio.PollStopButton(drv_stop)
-	go elevio.Timer_TimedOut(drv_timer)
+	go elevio.Timer_timedOut(drv_timer)
 
 	//if(input.floorSensor() == -1){
 	//    fsm_onInitBetweenFloors();
@@ -44,7 +45,7 @@ func main() {
 		case a := <-drv_buttons:
 			elevio.Fsm_onRequestButtonPress(a.Floor, a.Button)
 		case a := <-drv_floors:
-			elevio.FsmOnFloorArrival(a)
+			elevio.Fsm_OnFloorArrival(a)
 		case a := <-drv_obstr:
 			fmt.Printf("%+v\n", a)
 			if a {
@@ -61,14 +62,13 @@ func main() {
 				}
 			}
 		case a := <-drv_timer:
-			fmt.Println(a)
+			//fmt.Println("This is a bool:", a)
 			if a {
-				elevio.Timer_Stop()
+				elevio.Timer_stop()
 				elevio.Fsm_onDoorTimeout()
-				fmt.Println("THIS")
+				//fmt.Println("THIS")
 			}
 		}
-		time.Sleep(1)
 
 	}
 }

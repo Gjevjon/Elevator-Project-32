@@ -15,6 +15,12 @@ func setAllLights(es Elevator) {
 	}
 }
 
+func Fsm_onInitBetweenFloors() {
+	SetMotorDirection(D_Down)
+	elevator.dirn = D_Down
+	elevator.behaviour = EB_Moving
+}
+
 func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 	fmt.Printf("\n\n%s(%d, %s)\n", "fsm_onRequestButtonPress", btn_floor, elevio_button_toString(btn_type))
 	elevator_print(elevator)
@@ -22,7 +28,7 @@ func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 	switch elevator.behaviour {
 	case EB_DoorOpen:
 		if requests_shouldClearImmediately(elevator, btn_floor, btn_type) {
-			timer_start(elevator.config.doorOpenDuration_s)
+			Timer_start(elevator.config.doorOpenDuration_s)
 		} else {
 			elevator.requests[btn_floor][btn_type] = true
 		}
@@ -30,13 +36,13 @@ func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 		elevator.requests[btn_floor][btn_type] = true
 	case EB_Idle:
 		elevator.requests[btn_floor][btn_type] = true
-		var pair DirnBehaviourPair = requests_chooseDirection(elevator)
+		pair := requests_chooseDirection(elevator)
 		elevator.dirn = pair.dirn
 		elevator.behaviour = pair.behaviour
 		switch pair.behaviour {
 		case EB_DoorOpen:
 			SetDoorOpenLamp(true)
-			timer_start(elevator.config.doorOpenDuration_s)
+			Timer_start(elevator.config.doorOpenDuration_s)
 			elevator = requests_clearAtCurrentFloor(elevator)
 		case EB_Moving:
 			SetMotorDirection(elevator.dirn)
@@ -49,7 +55,7 @@ func Fsm_onRequestButtonPress(btn_floor int, btn_type ButtonType) {
 
 }
 
-func FsmOnFloorArrival(newFloor int) {
+func Fsm_OnFloorArrival(newFloor int) {
 	fmt.Println("\n\n", "fsmOnFloorArrival", "(", newFloor, ")")
 	elevator_print(elevator)
 
@@ -59,10 +65,12 @@ func FsmOnFloorArrival(newFloor int) {
 	switch elevator.behaviour {
 	case EB_Moving:
 		if requests_shouldStop(elevator) {
+			fmt.Printf("Stop on the way up")
 			SetMotorDirection(D_Stop)
 			SetDoorOpenLamp(true)
 			elevator = requests_clearAtCurrentFloor(elevator)
-			timer_start(elevator.config.doorOpenDuration_s)
+			Timer_start(elevator.config.doorOpenDuration_s)
+			fmt.Println("Floor arrival time input is", elevator.config.doorOpenDuration_s)
 			setAllLights(elevator)
 			elevator.behaviour = EB_DoorOpen
 		}
@@ -79,17 +87,17 @@ func Fsm_onDoorTimeout() {
 
 	switch elevator.behaviour {
 	case EB_DoorOpen:
-		var pair DirnBehaviourPair = requests_chooseDirection(elevator)
+		pair := requests_chooseDirection(elevator)
 		elevator.dirn = pair.dirn
 		elevator.behaviour = pair.behaviour
 
 		switch elevator.behaviour {
 		case EB_DoorOpen:
-			timer_start(elevator.config.doorOpenDuration_s)
+			Timer_start(elevator.config.doorOpenDuration_s)
+			fmt.Println("Floor door time out input is", elevator.config.doorOpenDuration_s)
 			elevator = requests_clearAtCurrentFloor(elevator)
 			setAllLights(elevator)
-		case EB_Moving:
-		case EB_Idle:
+		case EB_Moving, EB_Idle:
 			SetDoorOpenLamp(false)
 			SetMotorDirection(elevator.dirn)
 		}

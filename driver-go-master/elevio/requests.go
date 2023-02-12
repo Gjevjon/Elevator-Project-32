@@ -64,7 +64,7 @@ func requests_chooseDirection(e Elevator) DirnBehaviourPair {
 		} else if requests_above(e) {
 			return DirnBehaviourPair{D_Up, EB_Moving}
 		} else if requests_below(e) {
-			return DirnBehaviourPair{D_Up, EB_Moving}
+			return DirnBehaviourPair{D_Down, EB_Moving}
 		} else {
 			return DirnBehaviourPair{D_Stop, EB_Idle}
 		}
@@ -79,8 +79,9 @@ func requests_shouldStop(e Elevator) bool {
 		return e.requests[e.floor][B_HallDown] || e.requests[e.floor][B_Cab] || !requests_below(e)
 	case D_Up:
 		return e.requests[e.floor][B_HallUp] || e.requests[e.floor][B_Cab] || !requests_above(e)
+
 	case D_Stop:
-		return true
+		fallthrough
 	default:
 		return true
 	}
