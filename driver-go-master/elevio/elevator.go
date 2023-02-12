@@ -94,6 +94,6 @@ func elevator_print(es Elevator) {
 	fmt.Printf("  +--------------------+\n")
 }
 
-func Elevator_uninitialized() Elevator {
-	return Elevator{floor: -1, dirn: D_Stop, behaviour: EB_Idle, config: Config{clearRequestVariant: CV_All, doorOpenDuration_s: 3}}
+func Elevator_uninitialized() {
+	elevator = Elevator{floor: -1, dirn: D_Stop, behaviour: EB_Idle, config: Config{clearRequestVariant: CV_All, doorOpenDuration_s: 3}}
 }

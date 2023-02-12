@@ -25,6 +25,8 @@ func main() {
 
 	drv_timer := make(chan bool)
 
+	elevio.Elevator_uninitialized()
+
 	if elevio.GetFloor() == -1 {
 		elevio.Fsm_onInitBetweenFloors()
 	}

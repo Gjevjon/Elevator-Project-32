@@ -40,8 +40,7 @@ func StartSimpleTimer(simple_timer *time.Timer) {
 
 func Timer_start(duration int) {
 	timerEndTime = time.Now().Add(time.Duration(duration) * time.Second)
-	fmt.Println("timerEndTime is:", timerEndTime)
-
+	fmt.Println("timerEndTime is:", duration)
 	timerActive = true
 }
 
